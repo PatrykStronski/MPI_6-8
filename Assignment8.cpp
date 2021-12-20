@@ -44,12 +44,12 @@ int main(int argc, char **argv)
         if (rank == 0) { 
             sum_time = MPI_Wtime() - t_start;
 
-            cout<<"The time was "<<sum_time/(double)N<<" for message size: "<<message_size<<endl;
+            cout<<"The time was "<<sum_time/(double)N<<" for message size: "<<message_size * sizeof(int)<<"B"<<endl;
 
             double L = message_size * sizeof(int) / 1048576.0;
             double bandwidth2 = 2.0 * L * (double)N / sum_time;
             double latency = sum_time/(double)N/2.0;
-            cout << "The bandwidth2 is: " << bandwidth2 << " and latency: " << latency <<endl << endl;
+            cout << "The bandwidth is: " << bandwidth2 << " and latency: " << latency <<endl << endl;
         }
     }
 
