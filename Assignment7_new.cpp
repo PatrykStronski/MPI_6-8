@@ -3,7 +3,7 @@
 
 using namespace std;
 
-const int VEC_LEN = 1000000;
+#define VEC_LEN 1000000
 
 int calc_dot_product(int* vec1, int* vec2, int start, int end) {
     int res = 0;
@@ -25,8 +25,8 @@ int main(int argc, char **argv)
     const int batch_size = VEC_LEN/size;
 
     if (rank == 0) {
-        int vec1[1000000];
-        int vec2[1000000];
+        int vec1[VEC_LEN];
+        int vec2[VEC_LEN];
 
         for (int i = 0; i < VEC_LEN; i++) {
             vec1[i] = 1;
@@ -56,15 +56,18 @@ int main(int argc, char **argv)
 
         cout << "Dot product result is: " << full_sum << endl;
     } else {
-        int v1[1000000];
-        int v2[1000000];
+        int* v1 = new int[batch_size];
+        int* v2 = new int[batch_size];
 
-        MPI_Recv(&v1, batch_size, MPI_INT, 0, 1, MPI_COMM_WORLD, &status);
-        MPI_Recv(&v2, batch_size, MPI_INT, 0, 2, MPI_COMM_WORLD, &status);
+        MPI_Recv(v1, batch_size, MPI_INT, 0, 1, MPI_COMM_WORLD, &status);
+        MPI_Recv(v2, batch_size, MPI_INT, 0, 2, MPI_COMM_WORLD, &status);
 
         int dp = calc_dot_product(v1, v2, 0, batch_size);
 
         MPI_Send(&dp, 1, MPI_INT, 0, 3, MPI_COMM_WORLD);
+
+        delete v1;
+        delete v2;
     }
 	MPI_Finalize();
     return 0;
